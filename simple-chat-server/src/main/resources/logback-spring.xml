@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- scan属性为true时，如果配置文件发生变化会被重新加载 -->
+<!-- scanPeriod表示重新加载配置文件的时间间隔，仅当scan为true时有效，默认单位为毫秒 -->
+<configuration scan="true" scanPeriod="600 seconds">
+    <!-- 设置上下文的名称 -->
+    <contextName>data-center-log</contextName>
+    <!-- 多套环境配置， 以logback-spring.xml做为配置文件的名称时有效 -->
+    <springProfile name="dev">
+        <property name="name" value="value1"/>
+    </springProfile>
+    <springProfile name="test">
+        <property name="name" value="value2"/>
+    </springProfile>
+    <springProfile name="pro">
+        <property name="name" value="value3"/>
+    </springProfile>
+
+    <!-- 默认日志路径 -->
+    <property name="LOG_PATH" value="/var/log"/>
+    <!-- 无色日志输出格式 -->
+    <property name="DEFAULT_PATTERN"
+              value="%magenta(%date{yyyy-MM-dd HH:mm:ss.SSS})  %highlight(%-5level) %yellow(---) %green([%15thread]) %cyan(%40.40logger) %yellow(:) %green(%message) %red(%n%exception{full})"/>
+    <!-- 彩色日志输出格式 -->
+    <property name="DEFAULT_PATTERN_NONE_COLOR"
+              value="%date{yyyy-MM-dd HH:mm:ss.SSS}  %-5level --- [%15thread] %40.40logger : %message %n%exception{full}"/>
+
+
+    <!-- 控制台输出appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- 控制最低日志输出级别 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder>
+            <pattern>${DEFAULT_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+
+    <!--&lt;!&ndash; 文件日志记录 &ndash;&gt;-->
+    <!--<appender name="APP_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+    <!--    &lt;!&ndash; 当前文件名 &ndash;&gt;-->
+    <!--    <file>${LOG_PATH}/app.log</file>-->
+    <!--    &lt;!&ndash; 输出INFO及以上级别日志 &ndash;&gt;-->
+    <!--    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
+    <!--        <level>INFO</level>-->
+    <!--    </filter>-->
+    <!--    &lt;!&ndash;日志文档输出格式&ndash;&gt;-->
+    <!--    <encoder>-->
+    <!--        <pattern>${DEFAULT_PATTERN_NONE_COLOR}</pattern>-->
+    <!--        <charset>UTF-8</charset>-->
+    <!--    </encoder>-->
+    <!--    &lt;!&ndash;日志记录器的滚动策略、按日期记录&ndash;&gt;-->
+    <!--    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
+    <!--        &lt;!&ndash; 每天日志归档路径以及格式 &ndash;&gt;-->
+    <!--        <fileNamePattern>${LOG_PATH}/app.%d{yyyy-MM-dd}.log</fileNamePattern>-->
+    <!--        &lt;!&ndash;日志文档保留天数&ndash;&gt;-->
+    <!--        <maxHistory>15</maxHistory>-->
+    <!--    </rollingPolicy>-->
+    <!--</appender>-->
+
+    <!--&lt;!&ndash; 异常日志文件记录 &ndash;&gt;-->
+    <!--<appender name="EXCEPTION_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+    <!--    &lt;!&ndash; 当前文件名 &ndash;&gt;-->
+    <!--    <file>${LOG_PATH}/exception.log</file>-->
+    <!--    &lt;!&ndash; 只输出ERROR级别日志 &ndash;&gt;-->
+    <!--    <filter class="ch.qos.logback.classic.filter.LevelFilter">-->
+    <!--        <level>ERROR</level>-->
+    <!--        <onMatch>ACCEPT</onMatch>-->
+    <!--        <onMismatch>DENY</onMismatch>-->
+    <!--    </filter>-->
+    <!--    &lt;!&ndash;日志文档输出格式&ndash;&gt;-->
+    <!--    <encoder>-->
+    <!--        <pattern>${DEFAULT_PATTERN_NONE_COLOR}</pattern>-->
+    <!--        <charset>UTF-8</charset>-->
+    <!--    </encoder>-->
+    <!--    &lt;!&ndash;日志记录器的滚动策略、按日期记录&ndash;&gt;-->
+    <!--    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
+    <!--        &lt;!&ndash; 每天日志归档路径以及格式 &ndash;&gt;-->
+    <!--        <fileNamePattern>${LOG_PATH}/exception.%d{yyyy-MM-dd}.log</fileNamePattern>-->
+    <!--        &lt;!&ndash;日志文档保留天数&ndash;&gt;-->
+    <!--        <maxHistory>15</maxHistory>-->
+    <!--    </rollingPolicy>-->
+    <!--</appender>-->
+
+    <!--&lt;!&ndash; name表示具体配置的某一个包或者某一个类，additivity表示是否向上级logger打印信息 &ndash;&gt;-->
+    <!--<logger name="com.chuangqi.center.web" level="info" additivity="false">-->
+    <!--    <appender-ref ref="CONSOLE"/>-->
+    <!--    <appender-ref ref="CONNECT_FILE"/>-->
+    <!--    <appender-ref ref="LOGSTASH_EVENT"/>-->
+    <!--</logger>-->
+
+    <root level="debug">
+        <appender-ref ref="CONSOLE"/>
+        <!--<appender-ref ref="EXCEPTION_FILE"/>-->
+        <!--<appender-ref ref="APP_FILE"/>-->
+    </root>
+
+</configuration>
