@@ -2,7 +2,7 @@ package fit.wenchao.simplechatclient.ui;
 
 import fit.wenchao.simplechatclient.utils.ProgressBar;
 import fit.wenchao.simplechatclient.utils.RecvTaskListItem;
-import fit.wenchao.simplechatclient.utils.SyncPrinterHelper;
+import fit.wenchao.simplechatparent.utils.SyncPrinterHelper;
 import fit.wenchao.simplechatclient.utils.Table;
 import fit.wenchao.simplechatparent.dao.RecvTransferTaskDao;
 import fit.wenchao.simplechatparent.model.RecvTransferFileTask;
@@ -69,8 +69,8 @@ public class ClientCmdProcessor
                     String line  = "";
                     line = msgScanner.nextLine();
                     while(true) {
-                        msg += "\n";
                         msg += line;
+                        msg += "\n";
                         line = msgScanner.nextLine();
                         if(line.endsWith("@@")) {
                             break;
@@ -170,6 +170,11 @@ public class ClientCmdProcessor
                 table.print(printer);
                 SyncPrinterHelper.getSingleton().unlock();
                 break;
+            }
+
+            case "quit":
+            {
+                System.exit(0);
             }
         }
 

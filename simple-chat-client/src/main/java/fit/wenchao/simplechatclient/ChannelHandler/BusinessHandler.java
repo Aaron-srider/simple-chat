@@ -1,17 +1,22 @@
 package fit.wenchao.simplechatclient.ChannelHandler;
 
+import fit.wenchao.simplechatparent.utils.SyncPrinterHelper;
 import fit.wenchao.simplechatparent.concurrent.ThreadPool;
-import fit.wenchao.simplechatparent.model.business.ReceiveMsgResp;
+import fit.wenchao.simplechatparent.model.business.SendMsgReq;
 import fit.wenchao.simplechatparent.proto.IBusinessType;
 import fit.wenchao.simplechatparent.proto.IProtoMessage;
 import fit.wenchao.simplechatparent.service.FileTransferService;
+import fit.wenchao.simplechatparent.utils.DateUtils;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.SynchronousQueue;
 
 import static fit.wenchao.simplechatparent.proto.BusinessTypes.*;
@@ -20,6 +25,24 @@ import static fit.wenchao.simplechatparent.proto.BusinessTypes.*;
 @Slf4j
 public class BusinessHandler
 {
+
+    public static void main(String[] args)
+    {
+        ThreadPool.getSingleton().submit(() -> {
+            while(true) {
+                try
+                {
+                    Thread.sleep(100);
+                    System.out.println("jlkasf");
+                } catch (InterruptedException e)
+                {
+                }
+            }
+        });
+
+        ThreadPool.getSingleton().shutdownNow();
+        ExecutorService executorService = Executors.newCachedThreadPool();
+    }
 
     @Autowired
     @Resource(name = "loginSyncQueue")
@@ -46,10 +69,17 @@ public class BusinessHandler
                 e.printStackTrace();
             }
         }
-        else if (businessType.equals(RECV_MSG_RESP))
+        else if (businessType.equals(SEND_MSG))
         {
-            ReceiveMsgResp messageData = (ReceiveMsgResp) msg.getMessageData();
-            System.out.println(messageData.getText());
+            SendMsgReq messageData = (SendMsgReq) msg.getMessageData();
+            String now = DateUtils.formatDate(new Date());
+            String info = "\n" + now + "   ";
+            info+=messageData.getFromUser();
+            SyncPrinterHelper.Printer printer = SyncPrinterHelper.getSingleton().lock();
+            printer.println(info);
+            printer.println(messageData.getText());
+            printer.print(">");
+            SyncPrinterHelper.getSingleton().unlock();
         }
         else if (businessType.equals(FILE_TRANS_REQ))
         {

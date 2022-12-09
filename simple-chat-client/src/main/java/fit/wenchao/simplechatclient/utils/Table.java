@@ -1,5 +1,6 @@
 package fit.wenchao.simplechatclient.utils;
 
+import fit.wenchao.simplechatparent.utils.SyncPrinterHelper;
 import lombok.Data;
 
 import java.lang.reflect.Field;

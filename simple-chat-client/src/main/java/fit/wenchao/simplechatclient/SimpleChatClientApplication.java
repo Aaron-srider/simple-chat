@@ -20,7 +20,8 @@ public class SimpleChatClientApplication {
 
         NettyClient client = SpringIOC.SINGLETON.getBean(BeanNameConstants.CLIENT_BEAN_NAME, NettyClient.class);
 
-        client.start();
+        client.init();
+        client.connect();
 
     }
 }

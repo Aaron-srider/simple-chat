@@ -82,7 +82,7 @@ public class NettyServer {
 
                                         // user not exists
                                         if (userExists == UserPO.NULL) {
-                                            ProtoMessage protoMessage = new ProtoMessage(new SendMsgResp(LOGIN_FAIL.getCode()), LOGIN_RESP);
+                                            ProtoMessage protoMessage = new ProtoMessage(new LoginResp(LOGIN_FAIL.getCode(), username), LOGIN_RESP);
                                             ctx.writeAndFlush(protoMessage);
                                             return;
                                         }
@@ -128,7 +128,7 @@ public class NettyServer {
                                         }
 
                                         // send msg to target user
-                                        protoMessage = new ProtoMessage(new ReceiveMsgResp(text), BusinessTypes.RECV_MSG_RESP);
+                                        protoMessage = new ProtoMessage(sendMsgReq, BusinessTypes.SEND_MSG);
                                         onlineChannel.writeAndFlush(protoMessage);
                                     }
                                     else if (businessType.equals(BusinessTypes.FILE_TRANS_REQ)) {

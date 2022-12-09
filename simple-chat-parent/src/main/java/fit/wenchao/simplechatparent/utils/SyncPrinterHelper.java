@@ -1,4 +1,4 @@
-package fit.wenchao.simplechatclient.utils;
+package fit.wenchao.simplechatparent.utils;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;

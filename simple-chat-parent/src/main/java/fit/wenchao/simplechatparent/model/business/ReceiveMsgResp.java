@@ -14,4 +14,6 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 public class ReceiveMsgResp implements IMessageData {
     private String text;
+    private String from;
+    private String to;
 }

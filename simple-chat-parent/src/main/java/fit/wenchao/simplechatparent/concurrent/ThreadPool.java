@@ -15,7 +15,7 @@ public class ThreadPool {
 
     private static final ThreadPool singleton = new ThreadPool();
 
-    private static final ThreadPoolExecutor threadPool = new ThreadPoolExecutor(
+    private static ThreadPoolExecutor threadPool = new ThreadPoolExecutor(
             corePoolSize,
             maxPoolSize,
             keepAliveTime,
@@ -31,6 +31,21 @@ public class ThreadPool {
 
     public void shutdown() {
         threadPool.shutdown();
+    }
+
+    public void shutdownNow() {
+        threadPool.shutdownNow();
+    }
+
+    public void reStart() {
+        this.shutdownNow();
+        threadPool = new ThreadPoolExecutor( corePoolSize,
+                maxPoolSize,
+                keepAliveTime,
+                TimeUnit.SECONDS,
+                new LinkedBlockingQueue<Runnable>(poolBlockingSize),
+                Executors.defaultThreadFactory(),
+                new ThreadPoolExecutor.AbortPolicy());
     }
 
     public void submit(Runnable task) {

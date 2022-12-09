@@ -11,17 +11,25 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Scanner;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.SynchronousQueue;
 
 import static fit.wenchao.simplechatparent.proto.BusinessTypes.LOGIN;
 
 @Component
-public class InteractiveThread implements Runnable
+public class InteractiveThreadTask implements Runnable
 {
     @Autowired
     @Resource(name = "loginSyncQueue")
     SynchronousQueue<Object> loginRespQueue;
+
+    int times;
+
+    boolean loseConnToServer;
+
+    public void setLoseConnToServer(boolean loseConnToServer)
+    {
+        this.loseConnToServer = loseConnToServer;
+    }
     //public static void main(String[] args) throws InterruptedException
     //{
     //    SynchronousQueue<String> queue = new SynchronousQueue<>();
@@ -37,9 +45,9 @@ public class InteractiveThread implements Runnable
     //    }).start();
     //}
 
-    @Autowired
-    @Resource(name = "loginCountDownLatch")
-    CountDownLatch loginCountDownLatch;
+    //@Autowired
+    //@Resource(name = "loginCountDownLatch")
+    //CountDownLatch loginCountDownLatch;
 
     @Autowired
     ClientCmdProcessor clientCmdProcessor;
@@ -54,10 +62,18 @@ public class InteractiveThread implements Runnable
     @Override
     public void run()
     {
+
         // get user username and password
         Scanner scanner = new Scanner(System.in);
         System.out.println("Username: ");
+        if(loseConnToServer) {
+            // ask user to skip last input manually
+            System.out.print("Please press enter to continue");
+            loseConnToServer = false;
+        }
+
         String username = scanner.nextLine();
+
         username = username.trim();
         System.out.println("Password: ");
         String password = scanner.nextLine();
@@ -72,21 +88,27 @@ public class InteractiveThread implements Runnable
                 .businessType(LOGIN).build();
         ctx.channel().writeAndFlush(protoMessage);
 
+        // wait for login successfully
+        LoginResp loginResp = null;
         try
         {
-            // wait for login successfully
-            LoginResp loginResp = (LoginResp) loginRespQueue.take();
-            if(loginResp.getCode().equals(RespCodes.SUCCESS.getCode())) {
-                System.out.println("Hello, " + username);
-            }
+            loginResp = (LoginResp) loginRespQueue.take();
         } catch (InterruptedException e)
         {
             e.printStackTrace();
+        }
+        String respCode = loginResp.getCode();
+        if(respCode.equals(RespCodes.SUCCESS.getCode())) {
+            System.out.println("Hello, " + username);
+        } else if(respCode.equals(RespCodes.LOGIN_FAIL.getCode())) {
+            System.out.println("Login failed");
+            this.run();
         }
 
         // process user cmd loop
         while (true)
         {
+            System.out.print(">");
             String cmd = scanner.nextLine();
             clientCmdProcessor.processCmd(cmd, username, ctx);
         }

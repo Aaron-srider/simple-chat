@@ -16,6 +16,7 @@ import fit.wenchao.simplechatparent.proto.IProtoMessage;
 import fit.wenchao.simplechatparent.proto.ProtoMessage;
 import fit.wenchao.simplechatparent.utils.FileSegReadCtx;
 import fit.wenchao.simplechatparent.utils.FileUtils;
+import fit.wenchao.simplechatparent.utils.SyncPrinterHelper;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
@@ -161,9 +162,12 @@ public class FileTransferService {
         String to = fileTransferReq.getTo();
         String filePath = fileTransferReq.getFilePath();
 
-
-        System.out.println(
+        SyncPrinterHelper.Printer printer = SyncPrinterHelper.getSingleton().lock();
+        printer.println(
                 ft("Receive File: {} From: {}", filename, from));
+        printer.print(">");
+        SyncPrinterHelper.getSingleton().unlock();
+
         log.debug("write file part in new thread: {}", Thread.currentThread().getName());
 
         // create empty temp file with size totalFileSize
