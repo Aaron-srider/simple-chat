@@ -47,4 +47,5 @@ class EmptyBody extends DataRespBody{
 @AllArgsConstructor
 public class LoginResp implements IMessageData {
     private String code;
+    private String username;
 }

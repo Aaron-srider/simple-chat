@@ -4,10 +4,7 @@ import fit.wenchao.simplechatparent.constants.BeanNameConstants;
 import fit.wenchao.simplechatparent.constants.RespCodes;
 import fit.wenchao.simplechatparent.dao.IUserDao;
 import fit.wenchao.simplechatparent.model.UserPO;
-import fit.wenchao.simplechatparent.model.business.LoginReq;
-import fit.wenchao.simplechatparent.model.business.ReceiveMsgResp;
-import fit.wenchao.simplechatparent.model.business.SendMsgReq;
-import fit.wenchao.simplechatparent.model.business.SendMsgResp;
+import fit.wenchao.simplechatparent.model.business.*;
 import fit.wenchao.simplechatparent.proto.*;
 import fit.wenchao.simplechatparent.proto.codec.FrameDecoder;
 import fit.wenchao.simplechatparent.proto.codec.ProtoCodec;
@@ -93,7 +90,7 @@ public class NettyServer {
                                         // put user online
                                         sessionService.online(userExists.getId(), ctx.channel());
 
-                                        ProtoMessage protoMessage = new ProtoMessage(new SendMsgResp(SUCCESS.getCode()), LOGIN_RESP);
+                                        ProtoMessage protoMessage = new ProtoMessage(new LoginResp(SUCCESS.getCode(), username), LOGIN_RESP);
                                         ctx.writeAndFlush(protoMessage);
                                     }
                                     else if (businessType.equals(BusinessTypes.SEND_TEXT_REQ)) {

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.SynchronousQueue;
 
 import static fit.wenchao.simplechatparent.proto.BusinessTypes.*;
 
@@ -19,6 +20,10 @@ import static fit.wenchao.simplechatparent.proto.BusinessTypes.*;
 @Slf4j
 public class BusinessHandler
 {
+
+    @Autowired
+    @Resource(name = "loginSyncQueue")
+    SynchronousQueue<Object> loginRespQueue;
 
     @Autowired
     FileTransferService fileTransferService;
@@ -33,7 +38,13 @@ public class BusinessHandler
 
         if (businessType.equals(LOGIN_RESP))
         {
-            loginCountDownLatch.countDown();
+            try
+            {
+                loginRespQueue.put(msg.getMessageData());
+            } catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
         }
         else if (businessType.equals(RECV_MSG_RESP))
         {

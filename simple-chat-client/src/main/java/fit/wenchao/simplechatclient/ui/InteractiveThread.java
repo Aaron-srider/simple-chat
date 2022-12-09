@@ -1,6 +1,8 @@
 package fit.wenchao.simplechatclient.ui;
 
+import fit.wenchao.simplechatparent.constants.RespCodes;
 import fit.wenchao.simplechatparent.model.business.LoginReq;
+import fit.wenchao.simplechatparent.model.business.LoginResp;
 import fit.wenchao.simplechatparent.proto.IProtoMessage;
 import fit.wenchao.simplechatparent.proto.ProtoMessage;
 import io.netty.channel.ChannelHandlerContext;
@@ -10,12 +12,31 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.SynchronousQueue;
 
 import static fit.wenchao.simplechatparent.proto.BusinessTypes.LOGIN;
 
 @Component
 public class InteractiveThread implements Runnable
 {
+    @Autowired
+    @Resource(name = "loginSyncQueue")
+    SynchronousQueue<Object> loginRespQueue;
+    //public static void main(String[] args) throws InterruptedException
+    //{
+    //    SynchronousQueue<String> queue = new SynchronousQueue<>();
+    //    new Thread(() ->
+    //    {
+    //        try
+    //        {
+    //            Thread.sleep(1000);
+    //        } catch (InterruptedException e)
+    //        {
+    //            e.printStackTrace();
+    //        }
+    //    }).start();
+    //}
+
     @Autowired
     @Resource(name = "loginCountDownLatch")
     CountDownLatch loginCountDownLatch;
@@ -54,7 +75,10 @@ public class InteractiveThread implements Runnable
         try
         {
             // wait for login successfully
-            loginCountDownLatch.await();
+            LoginResp loginResp = (LoginResp) loginRespQueue.take();
+            if(loginResp.getCode().equals(RespCodes.SUCCESS.getCode())) {
+                System.out.println("Hello, " + username);
+            }
         } catch (InterruptedException e)
         {
             e.printStackTrace();
